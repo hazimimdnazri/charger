@@ -1,0 +1,61 @@
+services:
+  api:
+    build:
+      context: ./
+      dockerfile: api.Dockerfile
+    container_name: charger-api
+    restart: unless-stopped
+    working_dir: /var/www/api
+    ports:
+      - 3001:8000
+    volumes:
+      - ./:/var/www
+    networks:
+      - app-network
+
+  ocpp:
+    build:
+      context: ./
+      dockerfile: ocpp.Dockerfile
+    container_name: charger-ocpp
+    restart: unless-stopped
+    working_dir: /var/www/ocpp
+    ports:
+      - :3000
+    volumes:
+      - ./:/usr/src/ocpp
+    networks:
+      - app-network
+
+  app:
+    build:
+      context: ./
+      dockerfile: app.Dockerfile
+    container_name: charger-app
+    restart: unless-stopped
+    working_dir: /var/www/app
+    ports:
+      - 3000:4000
+    volumes:
+      - ./:/usr/src/app
+    networks:
+      - app-network
+
+
+  db:
+    image: mariadb:11.7.2
+    container_name: charger-db
+    restart: unless-stopped
+    ports: 
+      - 3308:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_DATABASE: evcharge
+    volumes:
+      - ./docker/mariadb:/var/lib/mysql
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
