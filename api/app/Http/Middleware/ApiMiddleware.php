@@ -19,8 +19,8 @@ class ApiMiddleware
             return $next($request);
         }
 
-        $acceptHeader = $request->header('Accept');
-        if ($acceptHeader != 'application/json') {
+        $acceptHeader = explode(',', $request->header('Accept'));
+        if (! in_array('application/json', $acceptHeader)) {
             return response()->json([
                 'message' => 'Not Acceptable',
                 'status' => 406,

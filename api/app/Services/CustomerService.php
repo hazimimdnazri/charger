@@ -68,7 +68,7 @@ class CustomerService
 
     public function show(Customer $customer): JsonResponse
     {
-        return response()->json($customer);
+        return response()->json($customer->with('customerChargers')->first());
     }
 
     public function update(Customer $customer, array $data): JsonResponse

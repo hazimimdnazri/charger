@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 
 class AuthService
 {
@@ -45,6 +46,8 @@ class AuthService
         return response()->json([
             'token' => $token,
             'user' => $user,
+            'role' => $user->role->slug,
+            'customer_id' => $user->customer->id ?? null,
         ], 200);
     }
 
@@ -71,6 +74,7 @@ class AuthService
 
     public function logout(Request $request): JsonResponse
     {
+        Log::debug($request->user());
         $request->user()->tokens()->delete();
 
         return response()->json([

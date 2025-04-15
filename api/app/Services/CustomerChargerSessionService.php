@@ -4,9 +4,20 @@ namespace App\Services;
 
 use App\Models\CustomerChargerSession;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Collection;
 
 class CustomerChargerSessionService
 {
+    public function getSessions(string $id): Collection
+    {
+        return CustomerChargerSession::where('customer_charger_id', $id)->get();
+    }
+
+    public function getSession(string $id): CustomerChargerSession
+    {
+        return CustomerChargerSession::find($id);
+    }
+
     public function startSession(array $payload): void
     {
         // Update incomplete sessions

@@ -27,19 +27,19 @@ services:
     networks:
       - app-network
 
-  app:
-    build:
-      context: ./
-      dockerfile: app.Dockerfile
-    container_name: charger-app
-    restart: unless-stopped
-    working_dir: /var/www/app
-    ports:
-      - 3000:4000
-    volumes:
-      - ./:/usr/src/app
-    networks:
-      - app-network
+  # app:
+  #   build:
+  #     context: ./
+  #     dockerfile: app.Dockerfile
+  #   container_name: charger-app
+  #   restart: unless-stopped
+  #   working_dir: /var/www/app
+  #   ports:
+  #     - 3000:4000
+  #   volumes:
+  #     - ./:/usr/src/app
+  #   networks:
+  #     - app-network
 
 
   db:
