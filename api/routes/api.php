@@ -26,6 +26,8 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::post('/stop', [CallbackController::class, 'stopCharger']);
         Route::get('/{id}/sessions', [CustomerChargerSessionController::class, 'index']);
     });
+
+    Route::get('customer/{id}/sessions', [CustomerChargerSessionController::class, 'customerSessions']);
 });
 
 Route::group(['prefix' => 'callback'], function () {

@@ -48,6 +48,7 @@ class AuthService
             'user' => $user,
             'role' => $user->role->slug,
             'customer_id' => $user->customer->id ?? null,
+            'charger_id' => $user?->customer?->customerChargers->first()?->id ?? null,
         ], 200);
     }
 

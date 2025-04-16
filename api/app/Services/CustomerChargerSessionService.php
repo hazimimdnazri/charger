@@ -76,4 +76,9 @@ class CustomerChargerSessionService
             'soc_percent' => $session->soc_percent + $payload['soc_percent'],
         ]);
     }
+
+    public function getCustomerSessions(string $id): Collection
+    {
+        return CustomerChargerSession::where('customer_id', $id)->get();
+    }
 }

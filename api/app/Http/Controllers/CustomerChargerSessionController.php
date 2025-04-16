@@ -23,4 +23,9 @@ class CustomerChargerSessionController extends Controller
     {
         return response()->json($this->customerChargerSessionService->getSession($id));
     }
+
+    public function customerSessions(string $id): JsonResponse
+    {
+        return response()->json($this->customerChargerSessionService->getCustomerSessions($id));
+    }
 }
