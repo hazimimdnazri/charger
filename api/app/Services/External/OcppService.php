@@ -78,6 +78,6 @@ class OcppService
 
     private function baseUrl(): string
     {
-        return 'http://charger-ocpp:3000';
+        return env('OCPP_URL');
     }
 }

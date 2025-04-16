@@ -17,15 +17,33 @@ A Docker-based solution for managing electric vehicle charging stations, featuri
 1. Clone the repository:
 ```bash
 git clone https://github.com/hazimimdnazri/charger.git
-cd evcharger
+cd charger
+```
+2. Setting up the API, create a copy of .env.example with the name .env:
+```
+cd evcharger/api
+cp .env.example .env
 ```
 
-2. Start the services:
+3. Make sure the configuration are as follows:
+```
+DB_CONNECTION=mysql
+DB_HOST=charger-db
+DB_PORT=3306
+DB_DATABASE=evcharge
+DB_USERNAME=root
+DB_PASSWORD=123456
+
+OCPP_URL="http://charger-ocpp:3000"
+OCPP_SECRET="hazimimdnazri"
+```
+
+4. Start the services:
 ```bash
 docker-compose up --build
 ```
 
-3. Run database migrations:
+5. Run database migrations (remove the `migrate` if you only want to serve the API):
 ```bash
 docker exec charger-api sh run.sh migrate
 ```
@@ -40,7 +58,7 @@ Services will be available at:
 
 Services Overview:
 - API: REST API for managing charging stations
-- OCPP Server: Handles communication with electric vehicle charging stations
+- OCPP Server: Simulate communication with electric vehicle charging stations
 - Web Interface: Vue.js-based web application for managing charging stations
 - Database: MariaDB for storing charging station data
 
@@ -50,7 +68,7 @@ Environment Variables:
 
 Common Commands:
 - Starting services: docker-compose up
-- Running migrations: docker exec charger-api sh run.sh migrate
+- Running migrations: docker exec charger-api sh run.sh migrate (Remove the `migrate` if you only want to serve the API)
 
 Notes:
 - Ports: API runs on 3001, OCPP Server on 3000, Web Interface on 3000 mapped to 4000, Database on 3308
@@ -68,7 +86,7 @@ Notes:
   - Transaction processing
 
 ### 2. OCPP Service (Node.js)
-- Port: 3000
+- Port: 3000 (Internally)
 - Implements OCPP 1.6 protocol
 - Handles direct communication with charging stations
 
@@ -83,55 +101,3 @@ Notes:
 - Persistent storage
 - Database: evcharge
 - Credentials: root/123456
-
-## Environment Configuration
-
-Create `.env` file in the API directory:
-```ini
-DB_CONNECTION=mariadb
-DB_HOST=db
-DB_PORT=3306
-DB_DATABASE=evcharge
-DB_USERNAME=root
-DB_PASSWORD=123456
-```
-
-## Common Commands
-
-Start services in detached mode:
-```bash
-docker-compose up -d --build
-```
-
-View running containers:
-```bash
-docker ps
-```
-
-Follow API logs:
-```bash
-docker logs -f charger-api
-```
-
-Run artisan commands:
-```bash
-docker exec charger-api php artisan [command]
-```
-
-Stop all services:
-```bash
-docker-compose down
-```
-
-## Development Notes
-
-- Hot-reloading enabled for frontend (Vue.js) and OCPP server
-- Database persists in `docker/mariadb` directory
-- API includes automatic migration/seed setup
-- Use `yarn dev` for frontend development
-
----
-
-**Technologies Used:** Laravel 12, Vue.js 3, MariaDB 11, Docker
-
-This README provides a comprehensive overview of the project, including prerequisites, getting started instructions, project structure, services overview, environment variables, and common commands. It's designed to be clear and easy to navigate, with code blocks for commands and structured sections for easy navigation.
