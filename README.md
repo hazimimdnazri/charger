@@ -38,9 +38,9 @@ OCPP_URL="http://charger-ocpp:3000"
 OCPP_SECRET="hazimimdnazri"
 ```
 
-4. Start the services:
+4. Buld and start the services as daemon:
 ```bash
-docker-compose up --build
+docker-compose up -d --build
 ```
 
 5. Run database migrations (remove the `migrate` if you only want to serve the API):
@@ -101,3 +101,39 @@ Notes:
 - Persistent storage
 - Database: evcharge
 - Credentials: root/123456
+
+# API Unit Tests #
+
+To run unit tests against the API, run this.
+```
+docker exec charger-api php artisan test
+```
+
+# Using the Frontend #
+
+Go to `localhost:3000` to access the frontend.
+
+There are 3 users available to use from the start. You can log into as one of the users:
+
+```
+email: admin@example.com
+password: 123456
+role: admin
+
+email: john@example.com
+password: 123456
+role: user/customer
+
+email: jane@example.com
+password: 123456
+role: user/customer
+```
+
+The admin is able to view customers and chargers list. The admin will be able to add charger and control any charging sessions.
+The user will be only allowed to view his/her own charging sessions. You may click on the `Start New Session` to initiate a charging session.
+Click on the `Disconnect` button to stop the charging session.
+
+# Accessing API via Postman #
+
+Several API endpoints are available based on the `api.php` route.
+Set the `Accept` header to `application/json`.
