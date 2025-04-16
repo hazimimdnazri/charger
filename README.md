@@ -21,7 +21,7 @@ cd charger
 ```
 2. Setting up the API, create a copy of .env.example with the name .env:
 ```
-cd evcharger/api
+cd api
 cp .env.example .env
 ```
 
