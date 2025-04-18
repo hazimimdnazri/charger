@@ -1,4 +1,6 @@
 <template>
+	<LoadingOverlay :isLoading="isLoading" :message="loadingMessage" />
+
 	<div class="container mt-5">
 		<div class="row justify-content-center">
 			<div class="col-md-6">
@@ -40,7 +42,9 @@
 								<label class="form-check-label" for="remember">Remember me</label>
 							</div>
 							<div class="d-grid">
-								<button type="submit" class="btn btn-primary">Login</button>
+								<button type="submit" class="btn btn-primary" :disabled="isLoading">
+									{{ isLoading ? 'Logging in...' : 'Login' }}
+								</button>
 							</div>
 						</form>
 					</div>
@@ -55,14 +59,19 @@ import { ref } from 'vue'
 import axios from 'axios'
 import { useToast } from 'vue-toastification'
 import { useRouter } from 'vue-router'
+import LoadingOverlay from '@/components/shared/LoadingOverlay.vue'
 
 const router = useRouter()
 const toast = useToast()
 const email = ref('')
 const password = ref('')
 const rememberMe = ref(false)
+const isLoading = ref(false)
+const loadingMessage = ref('')
 
 const handleLogin = () => {
+	isLoading.value = true
+	loadingMessage.value = 'Logging in...'
 	axios
 		.post(
 			'http://localhost:3001/api/auth/login',
@@ -100,6 +109,9 @@ const handleLogin = () => {
 				toast.error('An error occurred during login')
 			}
 			console.log(error.response.data)
+		})
+		.finally(() => {
+			isLoading.value = false
 		})
 }
 </script>

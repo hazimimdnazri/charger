@@ -1,10 +1,18 @@
 <template>
+	<LoadingOverlay :isLoading="isLoading" :message="loadingMessage" />
+
 	<TopbarComponent />
 
 	<div class="container mt-5">
 		<div class="d-flex justify-content-between align-items-center mb-1">
 			<h4>Charger {{ chargerId }} Sessions</h4>
-			<button class="btn btn-success" @click="startNewSession">Start New Session</button>
+			<button 
+				class="btn btn-success" 
+				@click="startNewSession"
+				:disabled="isLoading"
+			>
+				{{ isLoading ? 'Starting...' : 'Start New Session' }}
+			</button>
 		</div>
 
 		<template v-if="sessions.length">
@@ -27,9 +35,9 @@
 										'btn-danger': session.status !== 'completed',
 										'btn-secondary': session.status === 'completed',
 									}"
-									:disabled="session.status === 'completed'"
+									:disabled="session.status === 'completed' || isLoading"
 								>
-									Disconnect
+									{{ isLoading ? 'Disconnecting...' : 'Disconnect' }}
 								</button>
 							</div>
 						</div>
@@ -83,8 +91,10 @@ import { ref, onMounted, onUnmounted } from 'vue'
 import { useToast } from 'vue-toastification'
 import axios from 'axios'
 import { useRouter } from 'vue-router'
+import LoadingOverlay from '@/components/shared/LoadingOverlay.vue'
+
 export default {
-	components: { TopbarComponent },
+	components: { TopbarComponent, LoadingOverlay },
 
 	setup() {
 		const router = useRouter()
@@ -93,6 +103,8 @@ export default {
 		const sessions = ref([])
 		const chargerId = router.currentRoute.value.params.id
 		const intervalId = ref(null)
+		const isLoading = ref(false)
+		const loadingMessage = ref('')
 
 		const fetchSessions = async () => {
 			try {
@@ -105,9 +117,9 @@ export default {
 				)
 			} catch (error) {
 				toast.error(
-					'Failed to load customers: ' +
-						(error.response?.data?.message || 'Server error'),
+					'Failed to load customers: ' + (error.response?.data?.message || 'Server error'),
 				)
+				clearInterval(intervalId.value)
 			}
 		}
 
@@ -123,6 +135,8 @@ export default {
 		})
 
 		const startNewSession = async () => {
+			isLoading.value = true
+			loadingMessage.value = 'Starting New Session...'
 			try {
 				const authData = JSON.parse(localStorage.getItem('auth_data'))
 				const response = await axios.post(
@@ -140,10 +154,14 @@ export default {
 					'Failed to start new session: ' +
 						(error.response?.data?.message || 'Server error'),
 				)
+			} finally {
+				isLoading.value = false
 			}
 		}
 
 		const stopSession = async () => {
+			isLoading.value = true
+			loadingMessage.value = 'Stopping Session...'
 			try {
 				const authData = JSON.parse(localStorage.getItem('auth_data'))
 				const response = await axios.post(
@@ -160,10 +178,12 @@ export default {
 				toast.error(
 					'Failed to stop session: ' + (error.response?.data?.message || 'Server error'),
 				)
+			} finally {
+				isLoading.value = false
 			}
 		}
 
-		return { sessions, chargerId, startNewSession, stopSession }
+		return { sessions, chargerId, startNewSession, stopSession, isLoading, loadingMessage }
 	},
 }
 </script>

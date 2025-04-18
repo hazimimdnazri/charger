@@ -1,4 +1,5 @@
 <template>
+	<LoadingOverlay :isLoading="isLoading" :message="loadingMessage" />
 	<TopbarComponent />
 
 	<div class="container mt-5">
@@ -27,9 +28,9 @@
 										'btn-danger': session.status !== 'completed',
 										'btn-secondary': session.status === 'completed',
 									}"
-									:disabled="session.status === 'completed'"
+									:disabled="session.status === 'completed' || isLoading"
 								>
-									Disconnect
+									{{ isLoading ? 'Disconnecting...' : 'Disconnect' }}
 								</button>
 							</div>
 						</div>
@@ -83,6 +84,8 @@ import { ref, onMounted, onUnmounted } from 'vue'
 import { useToast } from 'vue-toastification'
 import axios from 'axios'
 import { useRouter } from 'vue-router'
+import LoadingOverlay from '@/components/shared/LoadingOverlay.vue'
+
 export default {
 	components: { TopbarComponent },
 
@@ -92,6 +95,8 @@ export default {
 		const toast = useToast()
 		const sessions = ref([])
 		const intervalId = ref(null)
+		const isLoading = ref(false)
+		const loadingMessage = ref('')
 
 		const fetchSessions = async () => {
 			try {
@@ -107,9 +112,10 @@ export default {
 				)
 			} catch (error) {
 				toast.error(
-					'Failed to load customers: ' +
+					'Failed to load sessions: ' +
 						(error.response?.data?.message || 'Server error'),
 				)
+				clearInterval(intervalId.value)
 			}
 		}
 
@@ -125,6 +131,9 @@ export default {
 		})
 
 		const startNewSession = async () => {
+			isLoading.value = true
+			loadingMessage.value = 'Starting New Session...'
+
 			try {
 				const authData = JSON.parse(localStorage.getItem('auth_data'))
 				const response = await axios.post(
@@ -142,10 +151,15 @@ export default {
 					'Failed to start new session: ' +
 						(error.response?.data?.message || 'Server error'),
 				)
+			} finally {
+				isLoading.value = false
 			}
 		}
 
 		const stopSession = async () => {
+			isLoading.value = true
+			loadingMessage.value = 'Stopping Session...'
+
 			try {
 				const authData = JSON.parse(localStorage.getItem('auth_data'))
 				const response = await axios.post(
@@ -162,10 +176,12 @@ export default {
 				toast.error(
 					'Failed to stop session: ' + (error.response?.data?.message || 'Server error'),
 				)
+			} finally {
+				isLoading.value = false
 			}
 		}
 
-		return { sessions, startNewSession, stopSession }
+		return { sessions, startNewSession, stopSession, isLoading, loadingMessage }
 	},
 }
 </script>

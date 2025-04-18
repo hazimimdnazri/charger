@@ -55,26 +55,15 @@ export default {
 		const toast = useToast()
 
 		const handleLogout = () => {
+			localStorage.removeItem('auth_data')
 			const authData = JSON.parse(localStorage.getItem('auth_data'))
 			const config = {
 				headers: {
 					Authorization: `Bearer ${authData.token}`,
 				},
 			}
-			axios
-				.post('http://localhost:3001/api/auth/logout', {}, config)
-				.then((response) => {
-					if (response.status === 200) {
-						localStorage.removeItem('auth_data')
-						toast.success('Logged out successfully')
-						router.push('/login')
-					}
-				})
-				.catch((error) => {
-					toast.error(
-						'Logout failed: ' + (error.response?.data?.message || 'Unknown error'),
-					)
-				})
+			axios.post('http://localhost:3001/api/auth/logout', {}, config)
+			router.push('/login')
 		}
 
 		return {
